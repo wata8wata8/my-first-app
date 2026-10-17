@@ -7,6 +7,7 @@ const messageEyebrow = document.querySelector("#message-eyebrow");
 const messageTitle = document.querySelector("#message-title");
 const messageCopy = document.querySelector("#message-copy");
 const startButton = document.querySelector("#start-button");
+const musicToggle = document.querySelector("#music-toggle");
 
 const WIDTH = canvas.width;
 const HEIGHT = canvas.height;
@@ -40,6 +41,10 @@ let coins = [];
 let cameraX = 0;
 let playing = false;
 let animationFrame = 0;
+let audioContext;
+let musicTimer;
+let musicStep = 0;
+let musicEnabled = false;
 
 function resetGame() {
     player.x = 70;
@@ -73,7 +78,84 @@ function startGame() {
     keys.clear();
     playing = true;
     message.hidden = true;
+    setMusicEnabled(true);
     animationFrame = requestAnimationFrame(gameLoop);
+}
+
+function playMusicStep() {
+    if (!musicEnabled || !audioContext) return;
+
+    const stepDuration = 0.28;
+    const now = audioContext.currentTime;
+    const melody = [0, 4, 7, 8, 7, 4, 1, 4, 0, 4, 7, 10, 8, 7, 4, 1];
+    const semitone = melody[musicStep % melody.length];
+    const frequency = 220 * 2 ** (semitone / 12);
+
+    const note = audioContext.createOscillator();
+    const noteGain = audioContext.createGain();
+    const tone = audioContext.createBiquadFilter();
+    note.type = "triangle";
+    note.frequency.setValueAtTime(frequency, now);
+    tone.type = "lowpass";
+    tone.frequency.setValueAtTime(1500, now);
+    noteGain.gain.setValueAtTime(0.0001, now);
+    noteGain.gain.exponentialRampToValueAtTime(0.12, now + 0.018);
+    noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+    note.connect(tone);
+    tone.connect(noteGain);
+    noteGain.connect(audioContext.destination);
+    note.start(now);
+    note.stop(now + 0.23);
+
+    if (musicStep % 4 === 0) {
+        const bass = audioContext.createOscillator();
+        const bassGain = audioContext.createGain();
+        bass.type = "sine";
+        bass.frequency.setValueAtTime(musicStep % 8 === 0 ? 110 : 146.83, now);
+        bassGain.gain.setValueAtTime(0.0001, now);
+        bassGain.gain.exponentialRampToValueAtTime(0.16, now + 0.025);
+        bassGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+        bass.connect(bassGain);
+        bassGain.connect(audioContext.destination);
+        bass.start(now);
+        bass.stop(now + 0.31);
+    }
+
+    musicStep += 1;
+}
+
+function setMusicEnabled(enabled) {
+    musicEnabled = enabled;
+    musicToggle.setAttribute("aria-pressed", String(enabled));
+    musicToggle.textContent = enabled ? "♪ BGM ON" : "♪ BGM OFF";
+    window.clearInterval(musicTimer);
+    musicTimer = undefined;
+
+    if (!enabled) {
+        if (audioContext) audioContext.suspend();
+        return;
+    }
+
+    const AudioContextClass = window.AudioContext;
+    if (!AudioContextClass) {
+        musicToggle.textContent = "♪ BGM unavailable";
+        musicToggle.setAttribute("aria-pressed", "false");
+        musicEnabled = false;
+        return;
+    }
+
+    audioContext ??= new AudioContextClass();
+    audioContext.resume().then(() => {
+        if (!musicEnabled || musicTimer) return;
+        musicStep = 0;
+        playMusicStep();
+        musicTimer = window.setInterval(playMusicStep, 280);
+    }).catch((error) => {
+        musicEnabled = false;
+        musicToggle.setAttribute("aria-pressed", "false");
+        musicToggle.textContent = "♪ BGM error";
+        console.error("BGMを再生できませんでした。", error);
+    });
 }
 
 function overlaps(a, b) {
@@ -355,6 +437,7 @@ document.querySelectorAll("[data-control]").forEach((button) => {
 });
 
 startButton.addEventListener("click", startGame);
+musicToggle.addEventListener("click", () => setMusicEnabled(!musicEnabled));
 
 resetGame();
 draw();

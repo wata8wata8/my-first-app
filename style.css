@@ -114,6 +114,27 @@ canvas {
     font-size: 14px;
 }
 
+#music-toggle {
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 10px;
+    background: rgba(16, 26, 45, .74);
+    color: #d8e3f5;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+}
+
+#music-toggle[aria-pressed="true"] {
+    color: #ffe08a;
+}
+
+#music-toggle:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 3px;
+}
+
 .message {
     position: absolute;
     inset: 0;
@@ -230,6 +251,11 @@ footer {
     }
 
     .hud span {
+        padding: 6px 8px;
+        font-size: 10px;
+    }
+
+    #music-toggle {
         padding: 6px 8px;
         font-size: 10px;
     }
