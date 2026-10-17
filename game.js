@@ -34,10 +34,12 @@ const initialCoins = [
     { x: 2020, y: 405 }, { x: 2220, y: 390 },
 ];
 
-const player = { x: 70, y: GROUND_Y - 46, width: 32, height: 46, vx: 0, vy: 0, grounded: true };
-const enemy = { x: 820, y: GROUND_Y - 32, width: 38, height: 32, minX: 720, maxX: 1010, speed: 1.5 };
+const player = { x: 70, y: GROUND_Y - 46, width: 32, height: 46, vx: 0, vy: 0, grounded: true, facing: 1 };
+const enemy = { x: 820, y: GROUND_Y - 32, width: 38, height: 32, minX: 720, maxX: 1010, speed: 1.5, alive: true };
 const keys = new Set();
 let coins = [];
+let fireballs = [];
+let fireCooldown = 0;
 let cameraX = 0;
 let playing = false;
 let animationFrame = 0;
@@ -52,8 +54,12 @@ function resetGame() {
     player.vx = 0;
     player.vy = 0;
     player.grounded = true;
+    player.facing = 1;
     enemy.x = 820;
     enemy.speed = 1.5;
+    enemy.alive = true;
+    fireballs = [];
+    fireCooldown = 0;
     cameraX = 0;
     coins = initialCoins.map((coin) => ({ ...coin, collected: false }));
     updateHud();
@@ -167,6 +173,7 @@ function update() {
     const movingLeft = keys.has("ArrowLeft") || keys.has("KeyA") || keys.has("left");
     const movingRight = keys.has("ArrowRight") || keys.has("KeyD") || keys.has("right");
     player.vx = (Number(movingRight) - Number(movingLeft)) * MOVE_SPEED;
+    if (player.vx !== 0) player.facing = Math.sign(player.vx);
     player.x = Math.max(0, Math.min(WORLD_WIDTH - player.width, player.x + player.vx));
 
     player.vy += GRAVITY;
@@ -193,11 +200,39 @@ function update() {
         player.grounded = false;
     }
 
-    enemy.x += enemy.speed;
-    if (enemy.x < enemy.minX || enemy.x + enemy.width > enemy.maxX) {
-        enemy.speed *= -1;
-        enemy.x = Math.max(enemy.minX, Math.min(enemy.maxX - enemy.width, enemy.x));
+    if (enemy.alive) {
+        enemy.x += enemy.speed;
+        if (enemy.x < enemy.minX || enemy.x + enemy.width > enemy.maxX) {
+            enemy.speed *= -1;
+            enemy.x = Math.max(enemy.minX, Math.min(enemy.maxX - enemy.width, enemy.x));
+        }
     }
+
+    if (fireCooldown > 0) fireCooldown -= 1;
+    if (keys.has("fire") && fireCooldown === 0) {
+        const radius = 9;
+        fireballs.push({
+            x: player.facing > 0 ? player.x + player.width + radius : player.x - radius,
+            y: player.y + player.height / 2,
+            vx: player.facing * 8,
+            radius,
+        });
+        fireCooldown = 18;
+    }
+
+    for (const fireball of fireballs) {
+        fireball.x += fireball.vx;
+        const hitbox = {
+            x: fireball.x - fireball.radius,
+            y: fireball.y - fireball.radius,
+            width: fireball.radius * 2,
+            height: fireball.radius * 2,
+        };
+        if (enemy.alive && overlaps(hitbox, enemy)) {
+            enemy.alive = false;
+        }
+    }
+    fireballs = fireballs.filter((fireball) => fireball.x > 0 && fireball.x < WORLD_WIDTH);
 
     for (const coin of coins) {
         if (!coin.collected && overlaps(player, { x: coin.x - 11, y: coin.y - 11, width: 22, height: 22 })) {
@@ -205,7 +240,7 @@ function update() {
         }
     }
 
-    if (overlaps(player, enemy)) {
+    if (enemy.alive && overlaps(player, enemy)) {
         player.x = 70;
         player.y = GROUND_Y - player.height;
         player.vx = 0;
@@ -345,10 +380,26 @@ function drawWorld() {
         ctx.fillRect(coin.x - 1, coin.y - 6, 2, 12);
     }
 
-    drawEnemy();
+    for (const fireball of fireballs) drawFireball(fireball);
+    if (enemy.alive) drawEnemy();
     drawPlayer();
     drawGoal();
     ctx.restore();
+}
+
+function drawFireball(fireball) {
+    ctx.fillStyle = "rgba(255, 112, 50, .32)";
+    ctx.beginPath();
+    ctx.arc(fireball.x, fireball.y, fireball.radius + 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#ff713d";
+    ctx.beginPath();
+    ctx.arc(fireball.x, fireball.y, fireball.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#ffe68a";
+    ctx.beginPath();
+    ctx.arc(fireball.x, fireball.y, fireball.radius * 0.48, 0, Math.PI * 2);
+    ctx.fill();
 }
 
 function drawPlayer() {
@@ -406,6 +457,7 @@ const keyMap = new Map([
     ["ArrowUp", "ArrowUp"], [" ", "Space"], ["Spacebar", "Space"],
     ["a", "KeyA"], ["A", "KeyA"], ["d", "KeyD"], ["D", "KeyD"],
     ["w", "KeyW"], ["W", "KeyW"],
+    ["f", "fire"], ["F", "fire"],
 ]);
 
 window.addEventListener("keydown", (event) => {

@@ -213,10 +213,16 @@ canvas {
     touch-action: none;
 }
 
-.touch-controls button:last-child {
+[data-control="jump"] {
     min-width: 100px;
     margin-left: 12px;
     color: #70e1c2;
+    font-size: 14px;
+}
+
+[data-control="fire"] {
+    min-width: 92px;
+    color: #ffbd72;
     font-size: 14px;
 }
 
@@ -242,6 +248,17 @@ footer {
 
     .touch-controls {
         display: flex;
+        gap: 8px;
+    }
+
+    .touch-controls button {
+        min-width: 48px;
+    }
+
+    [data-control="jump"],
+    [data-control="fire"] {
+        min-width: 78px;
+        margin-left: 0;
     }
 
     .hud {
