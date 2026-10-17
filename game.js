@@ -149,32 +149,88 @@ function update() {
 
 function drawBackground() {
     const sky = ctx.createLinearGradient(0, 0, 0, HEIGHT);
-    sky.addColorStop(0, "#79c9e5");
-    sky.addColorStop(1, "#d4f0dc");
+    sky.addColorStop(0, "#43c5d5");
+    sky.addColorStop(0.62, "#83d9d1");
+    sky.addColorStop(1, "#ffd3a0");
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    ctx.fillStyle = "rgba(255, 239, 166, .9)";
+    ctx.fillStyle = "rgba(255, 218, 126, .24)";
     ctx.beginPath();
-    ctx.arc(790 - cameraX * 0.08, 105, 43, 0, Math.PI * 2);
+    ctx.arc(790 - cameraX * 0.08, 112, 65, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#ffcf68";
+    ctx.beginPath();
+    ctx.arc(790 - cameraX * 0.08, 112, 39, 0, Math.PI * 2);
     ctx.fill();
 
-    drawHills("#a7ddcf", 350, 0.18, 90);
-    drawHills("#70c5a9", 420, 0.32, 65);
+    drawDunes("#f5b878", 366, 0.12, 43);
+    drawCity();
+    drawDunes("#f5a86e", 430, 0.3, 48);
 }
 
-function drawHills(color, baseline, speed, height) {
+function drawDunes(color, baseline, speed, height) {
     ctx.fillStyle = color;
     ctx.beginPath();
     ctx.moveTo(0, HEIGHT);
-    for (let x = -100; x <= WIDTH + 100; x += 100) {
+    for (let x = -100; x <= WIDTH + 100; x += 80) {
         const worldX = x + cameraX * speed;
-        const y = baseline - Math.sin(worldX * 0.009) * height - Math.cos(worldX * 0.004) * height * 0.4;
+        const y = baseline - Math.sin(worldX * 0.005) * height - Math.cos(worldX * 0.0025) * height * 0.45;
         ctx.lineTo(x, y);
     }
     ctx.lineTo(WIDTH, HEIGHT);
     ctx.closePath();
     ctx.fill();
+}
+
+function drawCity() {
+    const parallax = cameraX * 0.2;
+    ctx.save();
+    ctx.translate(-parallax, 0);
+    const startX = Math.floor(parallax / 260) * 260 - 260;
+
+    for (let x = startX; x < parallax + WIDTH + 260; x += 260) {
+        const variation = Math.floor(x / 260) % 3;
+        const baseY = 414;
+        ctx.fillStyle = variation === 1 ? "#c97d9a" : "#b9789c";
+
+        ctx.fillRect(x + 22, baseY - 58, 47, 58);
+        ctx.fillRect(x + 82, baseY - 83, 54, 83);
+        ctx.fillRect(x + 151, baseY - 48, 62, 48);
+
+        ctx.beginPath();
+        ctx.moveTo(x + 82, baseY - 83);
+        ctx.quadraticCurveTo(x + 109, baseY - 128, x + 136, baseY - 83);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillRect(x + 99, baseY - 139, 20, 56);
+        ctx.beginPath();
+        ctx.moveTo(x + 99, baseY - 139);
+        ctx.lineTo(x + 109, baseY - 156);
+        ctx.lineTo(x + 119, baseY - 139);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillRect(x + 171, baseY - 91, 13, 43);
+        ctx.beginPath();
+        ctx.moveTo(x + 171, baseY - 91);
+        ctx.quadraticCurveTo(x + 177.5, baseY - 111, x + 184, baseY - 91);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = "#ffe0a0";
+        for (const windowX of [x + 35, x + 96, x + 116, x + 167, x + 190]) {
+            ctx.beginPath();
+            ctx.arc(windowX, baseY - 27, 4, Math.PI, 0);
+            ctx.lineTo(windowX + 4, baseY - 16);
+            ctx.lineTo(windowX - 4, baseY - 16);
+            ctx.closePath();
+            ctx.fill();
+        }
+        ctx.fillStyle = variation === 1 ? "#c97d9a" : "#b9789c";
+    }
+    ctx.restore();
 }
 
 function drawWorld() {
