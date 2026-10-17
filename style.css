@@ -3,7 +3,7 @@
 :root {
     color-scheme: dark;
     font-family: "DM Sans", "Noto Sans JP", sans-serif;
-    background: #101a2d;
+    background: #101022;
     color: #f4f7ff;
     font-synthesis: none;
 }
@@ -20,8 +20,8 @@ body {
     place-items: center;
     padding: 28px 18px;
     background:
-        radial-gradient(ellipse at 50% 0%, rgba(45, 76, 125, .38), transparent 58%),
-        #101a2d;
+        radial-gradient(ellipse at 50% 0%, rgba(104, 50, 133, .34), transparent 58%),
+        #101022;
 }
 
 button {
@@ -42,7 +42,7 @@ button {
 
 .eyebrow {
     margin: 0 0 5px;
-    color: #70e1c2;
+    color: #56efff;
     font-size: 11px;
     font-weight: 800;
     letter-spacing: .18em;
@@ -76,8 +76,8 @@ footer {
     overflow: hidden;
     border: 1px solid rgba(175, 203, 255, .2);
     border-radius: 18px;
-    background: #8bd4e8;
-    box-shadow: 0 24px 70px rgba(0, 0, 0, .3);
+    background: #713b83;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .42), 0 0 32px rgba(255, 79, 163, .12);
 }
 
 canvas {
@@ -94,7 +94,8 @@ canvas {
     left: 16px;
     right: 16px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 8px;
     pointer-events: none;
 }
 
@@ -110,11 +111,12 @@ canvas {
 
 .hud strong {
     margin-left: 5px;
-    color: #70e1c2;
+    color: #56efff;
     font-size: 14px;
 }
 
 #music-toggle {
+    margin-left: auto;
     padding: 8px 12px;
     border: 1px solid rgba(255, 255, 255, .2);
     border-radius: 10px;
@@ -124,10 +126,11 @@ canvas {
     font-size: 12px;
     cursor: pointer;
     backdrop-filter: blur(8px);
+    pointer-events: auto;
 }
 
 #music-toggle[aria-pressed="true"] {
-    color: #ffe08a;
+    color: #56efff;
 }
 
 #music-toggle:focus-visible {
@@ -176,7 +179,7 @@ canvas {
     padding: 0 22px;
     border: 0;
     border-radius: 10px;
-    background: #70e1c2;
+    background: #56efff;
     color: #11243a;
     font-weight: 800;
     cursor: pointer;
@@ -185,7 +188,7 @@ canvas {
 
 #start-button:hover {
     transform: translateY(-2px);
-    background: #93f1d7;
+    background: #91f7ff;
 }
 
 #start-button:focus-visible,
@@ -216,13 +219,13 @@ canvas {
 [data-control="jump"] {
     min-width: 100px;
     margin-left: 12px;
-    color: #70e1c2;
+    color: #56efff;
     font-size: 14px;
 }
 
-[data-control="fire"] {
+[data-control="boost"] {
     min-width: 92px;
-    color: #ffbd72;
+    color: #56efff;
     font-size: 14px;
 }
 
@@ -256,7 +259,7 @@ footer {
     }
 
     [data-control="jump"],
-    [data-control="fire"] {
+    [data-control="boost"] {
         min-width: 78px;
         margin-left: 0;
     }
@@ -275,6 +278,11 @@ footer {
     #music-toggle {
         padding: 6px 8px;
         font-size: 10px;
+    }
+
+    .hud {
+        flex-wrap: wrap;
+        gap: 4px;
     }
 
     .hud strong {

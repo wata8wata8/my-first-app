@@ -4,34 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#101a2d">
-    <title>Skybound - 横スクロールアクション</title>
+    <title>NEON OVERDRIVE - スーパーカー・ラン</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <main class="game-shell">
         <header class="game-header">
             <div>
-                <p class="eyebrow">SIDE-SCROLLING ACTION</p>
-                <h1>Skybound</h1>
+                <p class="eyebrow">NEON OVERDRIVE</p>
+                <h1>SUPER CAR RUN</h1>
             </div>
-            <p class="how-to-play">← → / A D で移動 <span>・</span> Space / ↑ でジャンプ <span>・</span> F で火の玉</p>
+            <p class="how-to-play">← → / A D で走行 <span>・</span> Space / ↑ でジャンプ <span>・</span> Shift でブースト</p>
         </header>
 
-        <section class="game-frame" aria-label="横スクロールアクションゲーム">
+        <section class="game-frame" aria-label="スーパーカーの横スクロールゲーム">
             <div class="hud" aria-live="polite">
-                <span>コイン <strong id="coin-count">0</strong></span>
+                <span>ターボセル <strong id="coin-count">0</strong></span>
                 <span>ゴールまで <strong id="distance">0 m</strong></span>
-                <button id="music-toggle" type="button" aria-pressed="false">♪ BGM OFF</button>
+                <span class="turbo-readout">BOOST <strong id="boost-level">45%</strong></span>
+                <button id="music-toggle" type="button" aria-pressed="false">♪ SOUND OFF</button>
             </div>
-            <canvas id="game" width="960" height="540" aria-label="プレイヤーを操作してゴールを目指します">
+            <canvas id="game" width="960" height="540" aria-label="スーパーカーを操作してゴールを目指します">
                 このゲームを遊ぶには、Canvasに対応したブラウザーが必要です。
             </canvas>
             <div class="message" id="message" hidden>
                 <div class="message-card">
-                    <p class="eyebrow" id="message-eyebrow">READY?</p>
-                    <h2 id="message-title">冒険に出発しよう</h2>
-                    <p id="message-copy">コインを集めながら、敵を避けて旗を目指そう。</p>
-                    <button id="start-button" type="button">ゲームスタート</button>
+                    <p class="eyebrow" id="message-eyebrow">READY TO RACE?</p>
+                    <h2 id="message-title">限界まで加速しろ。</h2>
+                    <p id="message-copy">ターボセルを集めてブースト！ライバルをかわして、ネオンハイウェイを駆け抜けよう。</p>
+                    <button id="start-button" type="button">レーススタート</button>
                 </div>
             </div>
         </section>
@@ -40,9 +41,9 @@
             <button type="button" data-control="left" aria-label="左へ移動">←</button>
             <button type="button" data-control="right" aria-label="右へ移動">→</button>
             <button type="button" data-control="jump" aria-label="ジャンプ">ジャンプ</button>
-            <button type="button" data-control="fire" aria-label="火の玉を発射">火の玉</button>
+            <button type="button" data-control="boost" aria-label="ブースト">BOOST</button>
         </nav>
-        <footer>敵にぶつかるとスタート地点に戻ります。旗に触れるとクリア！</footer>
+        <footer>ライバルに接触すると減速します。ターボセルでエネルギーを補給してゴールを目指そう！</footer>
     </main>
     <script src="game.js"></script>
 </body>
