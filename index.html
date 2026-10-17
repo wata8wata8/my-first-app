@@ -3,34 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#101a2d">
-    <title>Skybound - 横スクロールアクション</title>
+    <meta name="theme-color" content="#173b2b">
+    <title>Jungle Dash - ジャングルアクション</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <main class="game-shell">
         <header class="game-header">
             <div>
-                <p class="eyebrow">SIDE-SCROLLING ACTION</p>
-                <h1>Skybound</h1>
+                <p class="eyebrow">JUNGLE SIDE-SCROLLING ACTION</p>
+                <h1>Jungle Dash</h1>
             </div>
             <p class="how-to-play">← → / A D で移動 <span>・</span> Space / ↑ でジャンプ <span>・</span> F で火の玉</p>
         </header>
 
         <section class="game-frame" aria-label="横スクロールアクションゲーム">
             <div class="hud" aria-live="polite">
-                <span>コイン <strong id="coin-count">0</strong></span>
+                <span>フルーツ <strong id="coin-count">0</strong></span>
                 <span>ゴールまで <strong id="distance">0 m</strong></span>
                 <button id="music-toggle" type="button" aria-pressed="false">♪ BGM OFF</button>
             </div>
-            <canvas id="game" width="960" height="540" aria-label="プレイヤーを操作してゴールを目指します">
+            <canvas id="game" width="960" height="540" aria-label="探検家を操作してジャングルのゴールを目指します">
                 このゲームを遊ぶには、Canvasに対応したブラウザーが必要です。
             </canvas>
             <div class="message" id="message" hidden>
                 <div class="message-card">
                     <p class="eyebrow" id="message-eyebrow">READY?</p>
-                    <h2 id="message-title">冒険に出発しよう</h2>
-                    <p id="message-copy">コインを集めながら、敵を避けて旗を目指そう。</p>
+                    <h2 id="message-title">ジャングルへ出発！</h2>
+                    <p id="message-copy">フルーツを集め、動物を避けながら奥の遺跡を目指そう。</p>
                     <button id="start-button" type="button">ゲームスタート</button>
                 </div>
             </div>
@@ -42,7 +42,7 @@
             <button type="button" data-control="jump" aria-label="ジャンプ">ジャンプ</button>
             <button type="button" data-control="fire" aria-label="火の玉を発射">火の玉</button>
         </nav>
-        <footer>敵にぶつかるとスタート地点に戻ります。旗に触れるとクリア！</footer>
+        <footer>動物にぶつかるとスタート地点に戻ります。遺跡の旗を目指そう！</footer>
     </main>
     <script src="game.js"></script>
 </body>

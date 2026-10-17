@@ -260,92 +260,70 @@ function update() {
 
     if (player.x >= WORLD_WIDTH - 100) {
         playing = false;
-        showMessage("LEVEL COMPLETE", "ゴール！", `コインを ${coins.filter((coin) => coin.collected).length} 枚集めました。`, "もう一度遊ぶ");
+        showMessage("LEVEL COMPLETE", "ゴール！", `フルーツを ${coins.filter((coin) => coin.collected).length} 個集めました。`, "もう一度遊ぶ");
     }
 }
 
 function drawBackground() {
-    const sky = ctx.createLinearGradient(0, 0, 0, HEIGHT);
-    sky.addColorStop(0, "#43c5d5");
-    sky.addColorStop(0.62, "#83d9d1");
-    sky.addColorStop(1, "#ffd3a0");
-    ctx.fillStyle = sky;
+    const canopy = ctx.createLinearGradient(0, 0, 0, HEIGHT);
+    canopy.addColorStop(0, "#153f32");
+    canopy.addColorStop(0.48, "#34734b");
+    canopy.addColorStop(1, "#a6b85d");
+    ctx.fillStyle = canopy;
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    ctx.fillStyle = "rgba(255, 218, 126, .24)";
+    ctx.fillStyle = "rgba(250, 222, 126, .16)";
     ctx.beginPath();
-    ctx.arc(790 - cameraX * 0.08, 112, 65, 0, Math.PI * 2);
+    ctx.arc(770 - cameraX * 0.06, 155, 110, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = "#ffcf68";
+    ctx.fillStyle = "rgba(255, 235, 157, .62)";
     ctx.beginPath();
-    ctx.arc(790 - cameraX * 0.08, 112, 39, 0, Math.PI * 2);
+    ctx.arc(770 - cameraX * 0.06, 155, 46, 0, Math.PI * 2);
     ctx.fill();
 
-    drawDunes("#f5b878", 366, 0.12, 43);
-    drawCity();
-    drawDunes("#f5a86e", 430, 0.3, 48);
+    drawJungleLayer("#285b42", 0.12, 0.72, 190, 90);
+    drawJungleLayer("#1d4938", 0.25, 0.82, 235, 112);
+    drawJungleLayer("#173b2e", 0.42, 0.91, 285, 132);
+    drawCanopyVines();
 }
 
-function drawDunes(color, baseline, speed, height) {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.moveTo(0, HEIGHT);
-    for (let x = -100; x <= WIDTH + 100; x += 80) {
-        const worldX = x + cameraX * speed;
-        const y = baseline - Math.sin(worldX * 0.005) * height - Math.cos(worldX * 0.0025) * height * 0.45;
-        ctx.lineTo(x, y);
-    }
-    ctx.lineTo(WIDTH, HEIGHT);
-    ctx.closePath();
-    ctx.fill();
-}
-
-function drawCity() {
-    const parallax = cameraX * 0.2;
+function drawJungleLayer(color, parallax, baseline, spacing, canopySize) {
+    const offset = cameraX * parallax;
+    const startX = Math.floor(offset / spacing) * spacing - spacing;
+    const baselineY = baseline * HEIGHT;
     ctx.save();
-    ctx.translate(-parallax, 0);
-    const startX = Math.floor(parallax / 260) * 260 - 260;
-
-    for (let x = startX; x < parallax + WIDTH + 260; x += 260) {
-        const variation = Math.floor(x / 260) % 3;
-        const baseY = 414;
-        ctx.fillStyle = variation === 1 ? "#c97d9a" : "#b9789c";
-
-        ctx.fillRect(x + 22, baseY - 58, 47, 58);
-        ctx.fillRect(x + 82, baseY - 83, 54, 83);
-        ctx.fillRect(x + 151, baseY - 48, 62, 48);
-
+    ctx.translate(-offset, 0);
+    ctx.fillStyle = color;
+    for (let x = startX; x < offset + WIDTH + spacing; x += spacing) {
+        const variation = Math.abs(Math.floor(x / spacing)) % 3;
+        const trunkWidth = 18 + variation * 7;
+        const top = baselineY - canopySize * (0.72 + variation * 0.08);
+        ctx.fillRect(x + spacing * 0.48, top + canopySize * 0.55, trunkWidth, HEIGHT - top);
         ctx.beginPath();
-        ctx.moveTo(x + 82, baseY - 83);
-        ctx.quadraticCurveTo(x + 109, baseY - 128, x + 136, baseY - 83);
-        ctx.closePath();
+        ctx.ellipse(x + spacing * 0.48, top + canopySize * 0.27, canopySize * 0.38, canopySize * 0.37, 0, 0, Math.PI * 2);
+        ctx.ellipse(x + spacing * 0.25, top + canopySize * 0.42, canopySize * 0.28, canopySize * 0.26, 0, 0, Math.PI * 2);
+        ctx.ellipse(x + spacing * 0.7, top + canopySize * 0.43, canopySize * 0.3, canopySize * 0.28, 0, 0, Math.PI * 2);
         ctx.fill();
+    }
+    ctx.restore();
+}
 
-        ctx.fillRect(x + 99, baseY - 139, 20, 56);
+function drawCanopyVines() {
+    const offset = cameraX * 0.58;
+    const startX = Math.floor(offset / 180) * 180 - 180;
+    ctx.save();
+    ctx.translate(-offset, 0);
+    ctx.strokeStyle = "#86a94e";
+    ctx.lineWidth = 5;
+    for (let x = startX; x < offset + WIDTH + 180; x += 180) {
         ctx.beginPath();
-        ctx.moveTo(x + 99, baseY - 139);
-        ctx.lineTo(x + 109, baseY - 156);
-        ctx.lineTo(x + 119, baseY - 139);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.fillRect(x + 171, baseY - 91, 13, 43);
+        ctx.moveTo(x + 25, 0);
+        ctx.bezierCurveTo(x + 20, 42, x + 54, 50, x + 42, 92);
+        ctx.stroke();
+        ctx.fillStyle = "#a3c957";
         ctx.beginPath();
-        ctx.moveTo(x + 171, baseY - 91);
-        ctx.quadraticCurveTo(x + 177.5, baseY - 111, x + 184, baseY - 91);
-        ctx.closePath();
+        ctx.ellipse(x + 42, 83, 7, 15, -0.55, 0, Math.PI * 2);
         ctx.fill();
-
-        ctx.fillStyle = "#ffe0a0";
-        for (const windowX of [x + 35, x + 96, x + 116, x + 167, x + 190]) {
-            ctx.beginPath();
-            ctx.arc(windowX, baseY - 27, 4, Math.PI, 0);
-            ctx.lineTo(windowX + 4, baseY - 16);
-            ctx.lineTo(windowX - 4, baseY - 16);
-            ctx.closePath();
-            ctx.fill();
-        }
-        ctx.fillStyle = variation === 1 ? "#c97d9a" : "#b9789c";
     }
     ctx.restore();
 }
@@ -355,29 +333,35 @@ function drawWorld() {
     ctx.translate(-cameraX, 0);
 
     for (const platform of platforms) {
-        ctx.fillStyle = platform.y === GROUND_Y ? "#285b52" : "#367d69";
+        ctx.fillStyle = platform.y === GROUND_Y ? "#65472d" : "#765434";
         ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
-        ctx.fillStyle = "#83d48c";
-        ctx.fillRect(platform.x, platform.y, platform.width, 8);
+        ctx.fillStyle = "#68a64c";
+        ctx.fillRect(platform.x, platform.y, platform.width, 10);
+        ctx.fillStyle = "#a0cc5a";
+        for (let x = platform.x + 8; x < platform.x + platform.width; x += 24) {
+            ctx.beginPath();
+            ctx.ellipse(x, platform.y + 2, 8, 3, -0.35, 0, Math.PI * 2);
+            ctx.fill();
+        }
         if (platform.y === GROUND_Y) {
-            ctx.fillStyle = "rgba(15, 50, 54, .28)";
+            ctx.fillStyle = "rgba(42, 30, 20, .3)";
             for (let x = platform.x + 18; x < platform.x + platform.width; x += 38) {
-                ctx.fillRect(x, platform.y + 23, 18, 5);
+                ctx.fillRect(x, platform.y + 27, 18, 5);
             }
         }
     }
 
     for (const coin of coins) {
         if (coin.collected) continue;
-        ctx.fillStyle = "#ffcf59";
+        ctx.fillStyle = "#ef6545";
         ctx.beginPath();
         ctx.arc(coin.x, coin.y, 11, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = "#fff0a5";
+        ctx.strokeStyle = "#ffd26b";
         ctx.lineWidth = 3;
         ctx.stroke();
-        ctx.fillStyle = "#fff5ce";
-        ctx.fillRect(coin.x - 1, coin.y - 6, 2, 12);
+        ctx.fillStyle = "#6b9e3c";
+        ctx.fillRect(coin.x - 2, coin.y - 14, 4, 6);
     }
 
     for (const fireball of fireballs) drawFireball(fireball);
@@ -403,35 +387,53 @@ function drawFireball(fireball) {
 }
 
 function drawPlayer() {
-    ctx.fillStyle = "#ed6b55";
-    ctx.fillRect(player.x, player.y + 8, player.width, player.height - 8);
-    ctx.fillStyle = "#ffc4a8";
-    ctx.fillRect(player.x + 5, player.y, player.width - 10, 17);
-    ctx.fillStyle = "#183347";
+    ctx.fillStyle = "#9a5635";
+    ctx.fillRect(player.x + 3, player.y + 11, player.width - 6, player.height - 11);
+    ctx.fillStyle = "#f2c78b";
+    ctx.fillRect(player.x + 6, player.y + 2, player.width - 12, 15);
+    ctx.fillStyle = "#4d7b3d";
+    ctx.fillRect(player.x + 2, player.y, player.width - 4, 7);
+    ctx.fillRect(player.x - 1, player.y + 5, player.width + 2, 4);
+    ctx.fillStyle = "#263b2d";
     ctx.fillRect(player.x + 19, player.y + 6, 4, 5);
-    ctx.fillStyle = "#fff0bd";
+    ctx.fillStyle = "#d7a64f";
+    ctx.fillRect(player.x + 4, player.y + 21, 24, 5);
+    ctx.fillStyle = "#513a29";
     ctx.fillRect(player.x + 4, player.y + player.height - 5, 10, 5);
     ctx.fillRect(player.x + 19, player.y + player.height - 5, 10, 5);
 }
 
 function drawEnemy() {
-    ctx.fillStyle = "#6b4ca0";
+    ctx.fillStyle = "#8d633b";
     ctx.beginPath();
     ctx.roundRect(enemy.x, enemy.y + 5, enemy.width, enemy.height - 5, 9);
     ctx.fill();
-    ctx.fillStyle = "#f7eaff";
-    ctx.fillRect(enemy.x + 8, enemy.y + 12, 5, 7);
+    ctx.fillStyle = "#b78853";
+    ctx.beginPath();
+    ctx.moveTo(enemy.x + 6, enemy.y + 9);
+    ctx.lineTo(enemy.x + 7, enemy.y - 1);
+    ctx.lineTo(enemy.x + 15, enemy.y + 8);
+    ctx.moveTo(enemy.x + 24, enemy.y + 8);
+    ctx.lineTo(enemy.x + 32, enemy.y - 1);
+    ctx.lineTo(enemy.x + 32, enemy.y + 12);
+    ctx.fill();
+    ctx.fillStyle = "#fff1d2";
+    ctx.fillRect(enemy.x + 9, enemy.y + 12, 5, 7);
     ctx.fillRect(enemy.x + 25, enemy.y + 12, 5, 7);
-    ctx.fillStyle = "#30234b";
-    ctx.fillRect(enemy.x + 10, enemy.y + 14, 2, 4);
+    ctx.fillStyle = "#35271c";
+    ctx.fillRect(enemy.x + 11, enemy.y + 14, 2, 4);
     ctx.fillRect(enemy.x + 27, enemy.y + 14, 2, 4);
+    ctx.fillStyle = "#e0a277";
+    ctx.fillRect(enemy.x + 15, enemy.y + 23, 9, 6);
 }
 
 function drawGoal() {
     const goalX = WORLD_WIDTH - 110;
-    ctx.fillStyle = "#f2f5ee";
-    ctx.fillRect(goalX, GROUND_Y - 128, 7, 128);
-    ctx.fillStyle = "#ffcf59";
+    ctx.fillStyle = "#bd9a5a";
+    ctx.fillRect(goalX, GROUND_Y - 128, 8, 128);
+    ctx.fillStyle = "#9e7440";
+    ctx.fillRect(goalX - 15, GROUND_Y - 4, 38, 5);
+    ctx.fillStyle = "#e2bc59";
     ctx.beginPath();
     ctx.moveTo(goalX + 7, GROUND_Y - 128);
     ctx.lineTo(goalX + 64, GROUND_Y - 110);
@@ -493,4 +495,4 @@ musicToggle.addEventListener("click", () => setMusicEnabled(!musicEnabled));
 
 resetGame();
 draw();
-showMessage("READY?", "冒険に出発しよう", "コインを集めながら、敵を避けて旗を目指そう。", "ゲームスタート");
+showMessage("READY?", "ジャングルへ出発！", "フルーツを集め、動物を避けながら奥の遺跡を目指そう。", "ゲームスタート");
